@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include <Adafruit_MCP3008.h>
 #include "movement.h"
 Adafruit_MCP3008 adc1;
@@ -27,6 +28,7 @@ const unsigned int MAX_PWM = 50;
 
 
 void setup() {
+  all_stop();
   // put your setup code here, to run once:
   Serial.begin(115200);
   // pinMode(M1_IN_1, OUTPUT);
@@ -51,31 +53,8 @@ void setup() {
   adc2.begin(ADC_2_CS);
   int savedadc[13];
   delay(2000);
-  all_forward(); //Start Moving
-}
-
-void loop() {
-  int savedadc[13];
-  int check=0;
-  // put your main code here, to run repeatedly:
-  check=SensorRead(savedadc);
-  if(check>3){
-    JunctionCheck(savedadc);
-  }
-  else{
-    // possible that we've reached a dead end,
-    // in which case we need to turn around
-    if (check < 2) {
-      all_stop();
-      delay(10);
-      turn_around();
-      delay(10);
-    }
-  }
-  all_forward(); // using function defined in movement_functions.cpp
-  //MoveForward();
-  lineCorrection(savedadc);
-  
+  all_stop();
+  delay(2000);
 }
 
 void lineCorrection(int (&sensor)[13]) {
@@ -93,6 +72,7 @@ void lineCorrection(int (&sensor)[13]) {
     motor1 -= 5;
     motor2 -= 5;
   }
+  delay(5);
 }
 
 
@@ -165,18 +145,26 @@ int SensorRead(int (& linesense)[13]){
     
   }
 
-  // void MoveForward(){
-  //   ledcWrite(M1_1_channel, 0);
-  //   ledcWrite(M1_2_channel, motor1);
-  //   ledcWrite(M2_1_channel, 0);
-  //   ledcWrite(M2_2_channel, motor2);
-  // }
-
+void loop() {
+  int savedadc[13];
+  int check=0;
+  // put your main code here, to run repeatedly:
+  check=SensorRead(savedadc);
+  if(check>3){
+    JunctionCheck(savedadc);
+  }
+  else{
+    // possible that we've reached a dead end,
+    // in which case we need to turn around
+    if (check < 2) {
+      all_stop();
+      delay(10);
+      turn_around();
+      delay(10);
+    }
+  }
+  all_forward(); // using function defined in movement_functions.cpp
+  //MoveForward();
+  lineCorrection(savedadc);
   
-
-  // void StopMotor(){
-  //   ledcWrite(M1_1_channel, 0);
-  //   ledcWrite(M1_2_channel, 0);
-  //   ledcWrite(M2_1_channel, 0);
-  //   ledcWrite(M2_2_channel, 0);
-  // }
+}
