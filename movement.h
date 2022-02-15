@@ -9,7 +9,9 @@ void right_forward();
 void right_backward();
 void right_stop();
 
+void all_forward();
 void all_stop();
+
 void turn_left();
 void turn_right();
 void turn_around();

@@ -52,6 +52,11 @@ void right_stop() {
   ledcWrite(right_IN_2_CHANNEL, 0);
 }
 
+void all_forward() {
+  left_forward();
+  right_forward();
+}
+
 void all_stop() {
   left_stop();
   right_stop();
