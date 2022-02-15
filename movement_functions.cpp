@@ -22,12 +22,12 @@ const int freq = 5000;
 const int ledChannel = 0;
 const int resolution = 8;
 
-void left_backward() {
+void left_backward(int PWM_VALUE) {
   ledcWrite(left_IN_1_CHANNEL, PWM_VALUE);
   ledcWrite(left_IN_2_CHANNEL, 0);
 }
 
-void left_forward() {
+void left_forward(int PWM_VALUE) {
   ledcWrite(left_IN_1_CHANNEL, 0);
   ledcWrite(left_IN_2_CHANNEL, PWM_VALUE);
 }
@@ -37,12 +37,12 @@ void left_stop() {
   ledcWrite(left_IN_2_CHANNEL, 0);
 }
 
-void right_backward() {
+void right_backward(int PWM_VALUE) {
   ledcWrite(right_IN_1_CHANNEL, PWM_VALUE);
   ledcWrite(right_IN_2_CHANNEL, 0);
 }
 
-void right_forward() {
+void right_forward(int PWM_VALUE) {
   ledcWrite(right_IN_1_CHANNEL, 0);
   ledcWrite(right_IN_2_CHANNEL, PWM_VALUE);
 }
@@ -52,9 +52,9 @@ void right_stop() {
   ledcWrite(right_IN_2_CHANNEL, 0);
 }
 
-void all_forward() {
-  left_forward();
-  right_forward();
+void all_forward(int LEFT_PWM_VALUE, int RIGHT_PWM_VALUE) {
+  left_forward(LEFT_PWM_VALUE);
+  right_forward(RIGHT_PWM_VALUE);
 }
 
 void all_stop() {
@@ -65,8 +65,8 @@ void all_stop() {
 void turn_left(){
   int i;
   for(i = 0; i < 10 ;i++){
-    left_forward();
-    right_backward();
+    left_forward(PWM_VALUE);
+    right_backward(PWM_VALUE);
   
     delay(10);
 
@@ -80,8 +80,8 @@ void turn_left(){
 void turn_right(){
   int i;
   for(i = 0; i < 10 ;i++){
-    left_backward();
-    right_forward();
+    left_backward(PWM_VALUE);
+    right_forward(PWM_VALUE);
   
     delay(10);
 
@@ -95,13 +95,12 @@ void turn_right(){
 void turn_around(){
   int i;
   for(i = 0; i < 20 ;i++){
-    left_forward();
-    right_backward();
+    left_forward(PWM_VALUE);
+    right_backward(PWM_VALUE);
   
     delay(10);
 
-    left_stop();
-    right_stop();
+    all_stop();
 
     delay (100);
   }

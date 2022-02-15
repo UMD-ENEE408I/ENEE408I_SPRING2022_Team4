@@ -4,22 +4,23 @@
 #include "movement.h"
 Adafruit_MCP3008 adc1;
 Adafruit_MCP3008 adc2;
-const unsigned int ADC_1_CS = A3;
-const unsigned int ADC_2_CS = A2;
-const unsigned int RF_CS = A4;
-const unsigned int M1_IN_1 = 2;
-const unsigned int M1_IN_2 = 3;
-const unsigned int M2_IN_1 = 5;
-const unsigned int M2_IN_2 = 4;
+const unsigned int ADC_1_CS = 2;
+const unsigned int ADC_2_CS = 17;
+
+const unsigned int left_IN_1 = 13;
+const unsigned int left_IN_2 = 12;
+const unsigned int right_IN_1 = 25;
+const unsigned int right_IN_2 = 14;
+
 const unsigned int freq = 5000;
-const unsigned int M1_1_channel = 0;
-const unsigned int M1_2_channel = 1;
-const unsigned int M2_1_channel = 2;
-const unsigned int M2_2_channel = 3;
+const unsigned int left_1_channel = 1;
+const unsigned int left_2_channel = 2;
+const unsigned int right_1_channel = 3;
+const unsigned int right_2_channel = 4;
 const unsigned int resolution = 8;
-const unsigned int M1_I_SENSE = A1;
-const unsigned int M2_I_SENSE = A0;
+
 const float M_I_COUNTS_TO_A = (3.3 / 1024.0) / 0.120;
+
 const unsigned int PWM_VALUE = 255;
 unsigned int motor1=40;//left?
 unsigned int motor2=40; //right?
@@ -27,35 +28,6 @@ const unsigned int MAX_PWM = 50;
 
 
 
-void setup() {
-  all_stop();
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-  // pinMode(M1_IN_1, OUTPUT);
-  // pinMode(M1_IN_2, OUTPUT);
-  // pinMode(M2_IN_1, OUTPUT);
-  // pinMode(M2_IN_2, OUTPUT);
-  
-  ledcSetup(M1_1_channel, freq, resolution);
-  ledcSetup(M1_2_channel, freq, resolution);
-  ledcSetup(M2_1_channel, freq, resolution);
-  ledcSetup(M2_2_channel, freq, resolution);
-
-  ledcAttachPin(M1_IN_1, M1_1_channel);
-  ledcAttachPin(M1_IN_2, M1_2_channel);
-  ledcAttachPin(M2_IN_1, M2_1_channel);
-  ledcAttachPin(M2_IN_2, M2_2_channel);
-
-  pinMode(RF_CS, OUTPUT);
-  digitalWrite(RF_CS, HIGH); // Without this the nRF24 will write to the SPI bus
-                             // while the ADC's are also talking
-  adc1.begin(ADC_1_CS);  
-  adc2.begin(ADC_2_CS);
-  int savedadc[13];
-  delay(2000);
-  all_stop();
-  delay(2000);
-}
 
 void lineCorrection(int (&sensor)[13]) {
   int avg = (sensor[0]*(-6)+sensor[1]*(-5)+sensor[2]*(-4)+sensor[3]*(-3)+sensor[4]*(-2)+
@@ -71,8 +43,9 @@ void lineCorrection(int (&sensor)[13]) {
   if (motor1 > MAX_PWM || motor2 > MAX_PWM) {
     motor1 -= 5;
     motor2 -= 5;
+
   }
-  delay(5);
+  // delay(5);
 }
 
 
@@ -145,9 +118,42 @@ int SensorRead(int (& linesense)[13]){
     
   }
 
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  // pinMode(left_IN_1, OUTPUT);
+  // pinMode(left_IN_2, OUTPUT);
+  // pinMode(right_IN_1, OUTPUT);
+  // pinMode(right_IN_2, OUTPUT);
+  
+  ledcSetup(left_1_channel, freq, resolution);
+  ledcSetup(left_2_channel, freq, resolution);
+  ledcSetup(right_1_channel, freq, resolution);
+  ledcSetup(right_2_channel, freq, resolution);
+
+  ledcAttachPin(left_IN_1, left_1_channel);
+  ledcAttachPin(left_IN_2, left_2_channel);
+  ledcAttachPin(right_IN_1, right_1_channel);
+  ledcAttachPin(right_IN_2, right_2_channel);
+
+  adc1.begin(ADC_1_CS);  
+  adc2.begin(ADC_2_CS);
+  int savedadc[13];
+  delay(2000);
+  all_stop();
+  delay(2000);
+}
+
+
 void loop() {
   int savedadc[13];
   int check=0;
+
+  // all_stop();
+  // delay(2000);
+  // all_forward();
+  // delay(2000);
+  // all_stop();
   // put your main code here, to run repeatedly:
   check=SensorRead(savedadc);
   if(check>3){
@@ -163,8 +169,7 @@ void loop() {
       delay(10);
     }
   }
-  all_forward(); // using function defined in movement_functions.cpp
-  //MoveForward();
+  all_forward(motor1,motor2); // using function defined in movement_functions.cpp
   lineCorrection(savedadc);
   
 }
