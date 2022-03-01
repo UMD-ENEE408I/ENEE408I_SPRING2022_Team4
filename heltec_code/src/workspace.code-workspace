@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\Test_IO"
+		},
+		{
+			"name": "heltec_code",
+			"path": ".."
+		},
+		{
+			"name": "testing_heltec",
+			"path": "..\\..\\testing_heltec"
+		}
+	],
+	"settings": {}
+}
